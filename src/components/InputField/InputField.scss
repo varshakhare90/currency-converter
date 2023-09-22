@@ -1,9 +1,25 @@
 $inputColor:  #0074CC;
-$errorColor : #d32f2f;;
+$errorColor : #d32f2f;
+$textColor : #fff;
+$backgroundColor: #005698;
+
 
 .amount-input-field{
     
         div{
+            .output-class{
+                color: $backgroundColor;
+                font-weight: 400;
+                margin-top: 20px;
+            }
+            .convert-button{
+                margin-top: 90px;
+                align-items: center;
+                background-color: $backgroundColor;
+                color: $textColor;
+                border-radius: 20px;
+
+            }
             #my-helper-text{
                 color:$errorColor;
                 font-weight: 400;
@@ -21,6 +37,7 @@ $errorColor : #d32f2f;;
                     color: $inputColor;
                     font-weight: bold;
                 }
+                
                 
             }
         

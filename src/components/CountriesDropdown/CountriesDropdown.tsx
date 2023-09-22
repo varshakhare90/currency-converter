@@ -8,11 +8,90 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import { countryCode } from "../../utilities/countryCode";
 
-const Dropdown: React.FC = ({options: CountryObject, , value}) => {
+interface DropDownProps {
+  val: CountryObject | null | undefined;
+  from: boolean;
+  to:  boolean;
+  setFrom: React.Dispatch<React.SetStateAction<CountryObject | null | undefined>>;
+  setTo:  React.Dispatch<React.SetStateAction<CountryObject | null | undefined>>;
+  handleChange: (e: any) => void;
+}
 
-  const [selectedOption, setSelectedOption] = useState<CountryObject | null>(null);
+const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handleChange}: DropDownProps) => {
 
+  const [selectedOption, setSelectedOption] = useState<CountryObject | null>();
+  const [countries, setCountries] = useState<CountryObject[]>([]);
+  
+  console.log('val', val, from, to,  selectedOption)
+  
+
+  const countriesCallFunc = () => {
+    let countriesObj: objFromApi = {};
+    fetch("https://openexchangerates.org/api/currencies.json")
+      .then((res) => res.json())
+      .then((data) => {
+        countriesObj = data;
+        countryFlagFunc(countriesObj);
+      });
+  };
+
+  const finalDropDownResult = (countriesObj: objFromApi, countriesFlagObj: objFromApi) => {
+    const mergedArray: CountryObject[] = [];
+    let index: number = 0;
+    for (const key3 in countryCode) {
+      for (const key1 in countriesObj) {
+        if (key1 === key3) {
+          for (const key2 in countriesFlagObj) {
+            if (countryCode[key1].toLowerCase() === key2) {
+              mergedArray.push({
+                currency: key1,
+                country: countriesObj[key1],
+                countryFlag: countryCode[key1].toLowerCase(),
+                index: index,
+                from:false,
+                to: false
+              });
+              index++;
+            }
+          }
+        }
+      }
+    }
+
+    setCountries(mergedArray);
+  };
+
+  const countryFlagFunc = (countriesObj: objFromApi) => {
+    let countriesFlagObj = {};
+    fetch("https://flagcdn.com/en/codes.json")
+      .then((res) => res.json())
+      .then((data) => {
+        countriesFlagObj = data;
+        finalDropDownResult(countriesObj, countriesFlagObj);
+      });
+  };
+
+  useEffect(() => {
+    countriesCallFunc();
+  },[]);
+
+  const handleAuto = (event: any, newValue: any) =>{
+
+    console.log('newValue', newValue, from, to)
+    newValue.from = from;
+    newValue.to = to;
+    setSelectedOption(newValue);
+    if(newValue.from){
+      setFrom(newValue);
+    }else{
+      setTo(newValue);
+    }
+     
+    handleChange(event);
+
+  };
 
   const InputLabelWithIcon: React.FC<{
     labelText: string;
@@ -28,7 +107,9 @@ const Dropdown: React.FC = ({options: CountryObject, , value}) => {
     <div className="countriedDropdown">
       <Autocomplete
         selectOnFocus
-        popupIcon={<KeyboardArrowDownIcon color="primary" />}
+        popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }}  />}
+        noOptionsText="No Records Found"
+        defaultValue={null}
         getOptionLabel={(option: CountryObject) =>
           `${option.currency}/(${option.country})`
         }
@@ -39,7 +120,7 @@ const Dropdown: React.FC = ({options: CountryObject, , value}) => {
         }
         value={selectedOption || undefined}
         onChange={(event, newValue) => {
-          setSelectedOption(newValue);
+          handleAuto(event, newValue);
         }}
         renderOption={(props, option) => (
           <Box
