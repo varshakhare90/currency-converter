@@ -1,0 +1,34 @@
+$inputColor:  #0074CC;
+$errorColor : #d32f2f;;
+
+.amount-input-field{
+    
+        div{
+            #my-helper-text{
+                color:$errorColor;
+                font-weight: 400;
+                font-size: 0.75rem;
+                font-style: italic;
+            }
+            & label.Mui-focused{
+                color: rgba(0, 0, 0, 0.6);
+            }
+            div{
+                input#standard-amount:after{
+                    border-bottom: 2px solid $inputColor;
+                }
+                input#standard-amount{
+                    color: $inputColor;
+                    font-weight: bold;
+                }
+                
+            }
+        
+            
+            
+        }
+    
+    
+}
+
+
