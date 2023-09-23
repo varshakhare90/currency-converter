@@ -10,3 +10,8 @@ export interface CountryObject{
 export interface objFromApi{
     [x: string]: string;
 }
+
+export interface ErrorObj{
+    error?:boolean;
+    errorMsg?: string;
+}

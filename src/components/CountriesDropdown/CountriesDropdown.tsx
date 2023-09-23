@@ -77,9 +77,16 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
     countriesCallFunc();
   },[]);
 
-  const handleAuto = (event: any, newValue: any) =>{
+  const handleAuto = (event: any, newValue: any, reason: any) =>{
 
     console.log('newValue', newValue, from, to)
+    console.log('reason', reason)
+
+    if(reason === "clear"){
+      setSelectedOption(newValue);
+      setFrom(newValue);
+    }else{
+      
     newValue.from = from;
     newValue.to = to;
     setSelectedOption(newValue);
@@ -90,6 +97,7 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
     }
      
     handleChange(event);
+    }
 
   };
 
@@ -102,6 +110,10 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
       {labelText}
     </div>
   );
+
+  // const defaultClearIcon = () =>{
+  //   setSelectedOption<CountryObject | null>();
+  // };
 
   return (
     <div className="countriedDropdown">
@@ -119,8 +131,8 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
           option.countryFlag === value.countryFlag
         }
         value={selectedOption || undefined}
-        onChange={(event, newValue) => {
-          handleAuto(event, newValue);
+        onChange={(event, newValue, reason) => {
+          handleAuto(event, newValue, reason);
         }}
         renderOption={(props, option) => (
           <Box
@@ -155,12 +167,17 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
               type: "search",
 
               startAdornment: params.inputProps.value && (
-                <InputAdornment position="start">
+                
+                  selectedOption?.countryFlag ?<>
+                  
+                  <InputAdornment position="start">
                   <img
                     alt="country flag"
                     src={`https://flagcdn.com/w20/${selectedOption?.countryFlag.toLowerCase()}.png`}
                   />
-                </InputAdornment>
+                </InputAdornment></> :<></>
+                
+                
               ),
             }}
           />
