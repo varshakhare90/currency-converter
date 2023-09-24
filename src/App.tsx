@@ -22,7 +22,7 @@ const App: React.FC = () =>{
     <Container maxWidth="sm">
       <Card variant="outlined" sx={{ maxWidth: 745 , boxShadow: 7, marginTop:5 }}>
         <CardContent>
-          <InputField amountInput={amountInput} setAmountInput={setAmountInput} handleAmountInput={handleAmountInput}/>
+          <InputField data-testid="Amount Input" amountInput={amountInput} setAmountInput={setAmountInput} handleAmountInput={handleAmountInput}/>
         </CardContent>
       </Card>
     </Container>
