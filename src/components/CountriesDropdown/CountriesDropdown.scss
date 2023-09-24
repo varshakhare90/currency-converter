@@ -2,7 +2,22 @@ $inputColor:  #0074CC;
 $errorColor : #d32f2f;
 $textColor : #fff;
 $backgroundColor: #005698;
+$textOptionColor: rgba(0, 0, 0, 0.6);
+$selectedOptionColor:rgb(0, 116, 204);
 
-.countriedDropdown{
-    margin-top: 50px !important;
+ .from-currency, .to-currency{
+    margin-top: 30px !important;
+}
+.MuiAutocomplete-option:hover{
+    background-color: $backgroundColor !important;
+    color: $textColor;
+}
+.MuiAutocomplete-option, .MuiAutocomplete-input
+{
+    color: $textOptionColor;
+}
+.MuiAutocomplete-inputFocused{
+    color: $selectedOptionColor !important;
+    font-weight: 400;
+
 }

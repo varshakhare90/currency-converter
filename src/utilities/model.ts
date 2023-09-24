@@ -3,8 +3,6 @@ export interface CountryObject{
     currency: string;
     countryFlag:string;
     index: number;
-    from: boolean;
-    to: boolean;
 }
 
 export interface objFromApi{

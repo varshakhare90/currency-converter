@@ -13,6 +13,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import CountdownTimer from "../CountdownTimer/CountdownTimer";
 
+import Alert from "@mui/material/Alert";
+
 interface InputProps {
   amountInput: string;
   setAmountInput: React.Dispatch<React.SetStateAction<string>>;
@@ -24,20 +26,28 @@ const initialErrorVal = {
   errorMsg: "",
 };
 
+const dropdownInitialValue = {
+  country: "",
+  currency: "",
+  countryFlag:"",
+  index: 0
+};
+
 const InputField = ({
   amountInput,
   setAmountInput,
   handleAmountInput,
 }: InputProps) => {
   const [hasError, setHasError] = useState<ErrorObj[]>([initialErrorVal]);
-  const [from, setFrom] = useState<CountryObject | null>();
-  const [to, setTo] = useState<CountryObject | null>();
+  const [from, setFrom] = useState<CountryObject | null>(dropdownInitialValue);
+  const [to, setTo] = useState<CountryObject | null>(dropdownInitialValue);
   const [rateData, setRateData] = useState<any>();
   const [selectedFromCurr, setSelectedFromCurr] = useState<string>("");
-
+  const [alertCurrFlag, setAlertCurrFlag] = useState<boolean>(false);
   const [selectedToCurr, setSelectedToCurr] = useState<string>("");
   const [convertedAmt, setConvertedAmt] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(600); // Set the initial time in seconds
+  const [switchFlip, setSwitchFlip] = useState<boolean>(false);
 
   const inputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,7 +64,9 @@ const InputField = ({
   };
 
   const switchCurrency = () => {
-    console.log("switching");
+    console.log("switching", from, to);
+    setSwitchFlip(!switchFlip);
+  
   };
 
   const rateApiCall = () => {
@@ -67,20 +79,29 @@ const InputField = ({
   };
 
   const convertCurrency = () => {
-    console.log("from covert currency", from, to, rateData);
+    console.log(
+      "from covert currency",
+      from,
+      to,
+      selectedFromCurr,
+      selectedToCurr,
+      rateData
+    );
 
     setConvertedAmt(0);
     setTimeLeft(600);
+    setAlertCurrFlag(false);
 
-    if (amountInput === "" && from !== undefined && to!==undefined) {
+    if (amountInput === "") {
       setHasError([{ error: true, errorMsg: "Please enter a number." }]);
-    }else {
+    } else if (from && to) {
       setHasError([{ error: false, errorMsg: "" }]);
 
       for (const key in to) {
         if (key === "currency") {
           setSelectedToCurr(to[key]);
-          setConvertedAmt(parseFloat(amountInput) * rateData[to[key]]);
+          let exchangedAmt = parseInt(amountInput) * rateData[to[key]]
+          setConvertedAmt(exchangedAmt);
           console.log(
             to[key],
             rateData[to[key]],
@@ -93,6 +114,12 @@ const InputField = ({
           setSelectedFromCurr(from[key]);
         }
       }
+    } else if (
+      amountInput &&
+      (selectedFromCurr === (undefined || "") ||
+        selectedToCurr === (undefined || ""))
+    ) {
+      setAlertCurrFlag(true);
     }
   };
 
@@ -120,6 +147,15 @@ const InputField = ({
 
   return (
     <Container className="amount-input-field">
+      {alertCurrFlag ? (
+        <>
+          <Alert severity="error">
+            Please select the currency to exchange.
+          </Alert>
+        </>
+      ) : (
+        <></>
+      )}
       <FormControl fullWidth sx={{ m: 1 }} variant="standard">
         <InputLabel htmlFor="standard-amount" className="amount-label">
           Amount
@@ -135,7 +171,7 @@ const InputField = ({
           endAdornment={
             <InputAdornment position="end">
               <SyncAltIcon
-                style={{ color: "#005698" }}
+                style={{ color: "#005698", cursor: "pointer" }}
                 onClick={switchCurrency}
               />
             </InputAdornment>
@@ -146,16 +182,9 @@ const InputField = ({
         )}
         <CountriesDropdown
           val={from}
-          from={true}
-          to={false}
-          setFrom={setFrom}
-          setTo={setTo}
-          handleChange={(e) => handleChange}
-        ></CountriesDropdown>
-        <CountriesDropdown
-          val={to}
-          from={false}
-          to={true}
+          from={from}
+          to={to}
+          switchFlip={switchFlip}
           setFrom={setFrom}
           setTo={setTo}
           handleChange={(e) => handleChange}

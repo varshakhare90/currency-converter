@@ -7,29 +7,39 @@ import { CountryObject, objFromApi } from "../../utilities/model";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
 import { countryCode } from "../../utilities/countryCode";
+import { ClassNames } from "@emotion/react";
 
 interface DropDownProps {
-  val: CountryObject | null | undefined;
-  from: boolean;
-  to:  boolean;
-  setFrom: React.Dispatch<React.SetStateAction<CountryObject | null | undefined>>;
-  setTo:  React.Dispatch<React.SetStateAction<CountryObject | null | undefined>>;
+  val: CountryObject | null;
+  from: CountryObject | null;
+  to: CountryObject | null;
+  switchFlip: boolean;
+  setFrom: React.Dispatch<React.SetStateAction<CountryObject | null>>;
+  setTo: React.Dispatch<React.SetStateAction<CountryObject | null>>;
   handleChange: (e: any) => void;
-}
+};
 
-const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handleChange}: DropDownProps) => {
 
-  const [selectedOption, setSelectedOption] = useState<CountryObject | null>();
+const Dropdown: React.FC<DropDownProps> = ({
+  val,
+  from,
+  to,
+  switchFlip,
+  setFrom,
+  setTo,
+  handleChange,
+}: DropDownProps) => {
   const [countries, setCountries] = useState<CountryObject[]>([]);
-  
-  console.log('val', val, from, to,  selectedOption)
-  
+
+
+  useEffect(() => {
+    countriesCallFunc();
+  }, []);
 
   const countriesCallFunc = () => {
     let countriesObj: objFromApi = {};
-    fetch("https://openexchangerates.org/api/currencies.json")
+    return fetch("https://openexchangerates.org/api/currencies.json")
       .then((res) => res.json())
       .then((data) => {
         countriesObj = data;
@@ -37,7 +47,20 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
       });
   };
 
-  const finalDropDownResult = (countriesObj: objFromApi, countriesFlagObj: objFromApi) => {
+  const countryFlagFunc = (countriesObj: objFromApi) => {
+    let countriesFlagObj = {};
+    return fetch("https://flagcdn.com/en/codes.json")
+      .then((res) => res.json())
+      .then((data) => {
+        countriesFlagObj = data;
+        finalDropDownResult(countriesObj, countriesFlagObj);
+      });
+  };
+
+  const finalDropDownResult = (
+    countriesObj: objFromApi,
+    countriesFlagObj: objFromApi
+  ) => {
     const mergedArray: CountryObject[] = [];
     let index: number = 0;
     for (const key3 in countryCode) {
@@ -50,8 +73,6 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
                 country: countriesObj[key1],
                 countryFlag: countryCode[key1].toLowerCase(),
                 index: index,
-                from:false,
-                to: false
               });
               index++;
             }
@@ -59,48 +80,37 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
         }
       }
     }
-
     setCountries(mergedArray);
   };
 
-  const countryFlagFunc = (countriesObj: objFromApi) => {
-    let countriesFlagObj = {};
-    fetch("https://flagcdn.com/en/codes.json")
-      .then((res) => res.json())
-      .then((data) => {
-        countriesFlagObj = data;
-        finalDropDownResult(countriesObj, countriesFlagObj);
-      });
-  };
-
   useEffect(() => {
-    countriesCallFunc();
-  },[]);
+    console.log("switchFlip", from, to);
+    let fromTemp = from;
+    setFrom(to);
+    setTo(fromTemp);
+  }, [switchFlip]);
 
-  const handleAuto = (event: any, newValue: any, reason: any) =>{
+  
 
-    console.log('newValue', newValue, from, to)
-    console.log('reason', reason)
+  const handleToCurrency = (event: any, newValue: any, reason: any) => {
+    if (reason === "clear") {
+      // setSelectedOption(newValue);
+      setTo(newValue);
+    } else {
+      //    setSelectedOption(newValue);
 
-    if(reason === "clear"){
-      setSelectedOption(newValue);
-      setFrom(newValue);
-    }else{
-      
-    newValue.from = from;
-    newValue.to = to;
-    setSelectedOption(newValue);
-    if(newValue.from){
-      setFrom(newValue);
-    }else{
       setTo(newValue);
     }
-     
     handleChange(event);
-    }
-
   };
-
+  const handleFromCurrency = (event: any, newValue: any, reason: any) => {
+    if (reason === "clear") {
+      setTo(newValue);
+    } else {
+      setFrom(newValue);
+    }
+    handleChange(event);
+  };
   const InputLabelWithIcon: React.FC<{
     labelText: string;
     icon: React.ReactNode;
@@ -111,28 +121,30 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
     </div>
   );
 
-  // const defaultClearIcon = () =>{
-  //   setSelectedOption<CountryObject | null>();
-  // };
+
 
   return (
-    <div className="countriedDropdown">
+    
+    <div className="countriesDropdown">
+      <div className="from-currency">
       <Autocomplete
-        selectOnFocus
-        popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }}  />}
+        selectOnFocus={true}
+        popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
         noOptionsText="No Records Found"
-        defaultValue={null}
         getOptionLabel={(option: CountryObject) =>
-          `${option.currency}/(${option.country})`
+          option.currency === ""
+            ? ""
+            : `${option?.currency}/${option?.country}`
         }
         options={countries}
         autoSelect={true}
         isOptionEqualToValue={(option: CountryObject, value: any) =>
-          option.countryFlag === value.countryFlag
+          option.countryFlag === value.countryFlag &&
+          option.currency === value.currency
         }
-        value={selectedOption || undefined}
+        value={from}
         onChange={(event, newValue, reason) => {
-          handleAuto(event, newValue, reason);
+          handleFromCurrency(event, newValue, reason);
         }}
         renderOption={(props, option) => (
           <Box
@@ -148,10 +160,12 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
               src={`https://flagcdn.com/w20/${option.countryFlag.toLowerCase()}.png`}
               alt="country flag"
             />
-            {option.country} ({option.currency})
+           {option.currency === ""
+            ? ""
+            : `${option?.currency}/${option?.country}`}
           </Box>
         )}
-        id="disable-close-on-select"
+        id="from-currency"
         renderInput={(params) => (
           <TextField
             {...params}
@@ -166,23 +180,97 @@ const Dropdown: React.FC<DropDownProps> = ({val, from, to, setFrom,setTo, handle
               ...params.InputProps,
               type: "search",
 
-              startAdornment: params.inputProps.value && (
-                
-                  selectedOption?.countryFlag ?<>
-                  
-                  <InputAdornment position="start">
-                  <img
-                    alt="country flag"
-                    src={`https://flagcdn.com/w20/${selectedOption?.countryFlag.toLowerCase()}.png`}
-                  />
-                </InputAdornment></> :<></>
-                
-                
-              ),
+              startAdornment:
+                params.inputProps.value &&
+                (from?.countryFlag ? (
+                  <>
+                    <InputAdornment position="start">
+                      <img
+                        alt="country flag"
+                        src={`https://flagcdn.com/w20/${from?.countryFlag.toLowerCase()}.png`}
+                      />
+                    </InputAdornment>
+                  </>
+                ) : (
+                  <></>
+                )),
             }}
           />
         )}
       />
+      </div>
+      <div className="to-currency">
+
+      <Autocomplete
+        selectOnFocus={true}
+        popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
+        noOptionsText="No Records Found"
+        getOptionLabel={(option: CountryObject) => 
+          option.currency === ""
+            ? ""
+            : `${option?.currency}/${option?.country}`
+        }
+        options={countries}
+        autoSelect={true}
+        isOptionEqualToValue={(option: CountryObject, value: any) =>
+          option.countryFlag === value.countryFlag &&
+          option.currency === value.currency
+        }
+        value={to}
+        onChange={(event, newValue, reason) => {
+          handleToCurrency(event, newValue, reason);
+        }}
+        renderOption={(props, option) => (
+          <Box
+            component="li"
+            {...props}
+            key={option.index}
+          >
+            <img
+              loading="lazy"
+              width="20"
+              srcSet={`https://flagcdn.com/w40/${option.countryFlag.toLowerCase()}.png 2x`}
+              src={`https://flagcdn.com/w20/${option.countryFlag.toLowerCase()}.png`}
+              alt="country flag"
+            />
+                     {option.currency === ""
+            ? ""
+            : `${option?.currency}/${option?.country}`}
+          </Box>
+        )}
+        id="to-currency"
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={
+              <InputLabelWithIcon
+                labelText="Search Currency"
+                icon={<SearchOutlinedIcon />}
+              />
+            }
+            variant="standard"
+            InputProps={{
+              ...params.InputProps,
+              type: "search",
+
+              startAdornment:
+                params.inputProps.value &&
+                (to?.countryFlag ? (
+                  <>
+                    <InputAdornment position="start">
+                      <img
+                        alt="country flag"
+                        src={`https://flagcdn.com/w20/${to?.countryFlag.toLowerCase()}.png`}
+                      />
+                    </InputAdornment>
+                  </>
+                ) : (
+                  <></>
+                )),
+            }}
+          />
+        )}
+      /></div>
     </div>
   );
 };
