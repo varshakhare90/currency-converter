@@ -14,7 +14,7 @@ interface timeInterface{
 const CountdownTimer = ({minutes, seconds} : timeInterface) => {
   
   return (
-    <Container className="countdown-timer-class">
+    <Container className="countdown-timer-class" id="countdown-timer" aria-label="timer">
       <Row fluid="true">
         <Col xs={2}></Col>
         <Col xs={10}>

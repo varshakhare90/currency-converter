@@ -12,7 +12,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import CountdownTimer from "../CountdownTimer/CountdownTimer";
-
 import Alert from "@mui/material/Alert";
 
 interface InputProps {
@@ -39,8 +38,8 @@ const InputField = ({
   handleAmountInput,
 }: InputProps) => {
   const [hasError, setHasError] = useState<ErrorObj[]>([initialErrorVal]);
-  const [from, setFrom] = useState<CountryObject | null>(dropdownInitialValue);
-  const [to, setTo] = useState<CountryObject | null>(dropdownInitialValue);
+  const [from, setFrom] = useState<CountryObject>(dropdownInitialValue);
+  const [to, setTo] = useState<CountryObject>(dropdownInitialValue);
   const [rateData, setRateData] = useState<any>();
   const [selectedFromCurr, setSelectedFromCurr] = useState<string>("");
   const [alertCurrFlag, setAlertCurrFlag] = useState<boolean>(false);
@@ -61,6 +60,15 @@ const InputField = ({
         { error: true, errorMsg: `${e.target.value} is not a valid number` },
       ]);
     }
+    resetValues();
+  };
+
+  const resetValues = () =>{
+    setConvertedAmt(0);
+    setTimeLeft(600);
+    setAlertCurrFlag(false);
+    setSelectedFromCurr("");
+    setSelectedToCurr("");
   };
 
   const switchCurrency = () => {
@@ -94,7 +102,7 @@ const InputField = ({
 
     if (amountInput === "") {
       setHasError([{ error: true, errorMsg: "Please enter a number." }]);
-    } else if (from && to) {
+    } else if (from.currency !=="" && to.currency !== "") {
       setHasError([{ error: false, errorMsg: "" }]);
 
       for (const key in to) {
@@ -114,11 +122,7 @@ const InputField = ({
           setSelectedFromCurr(from[key]);
         }
       }
-    } else if (
-      amountInput &&
-      (selectedFromCurr === (undefined || "") ||
-        selectedToCurr === (undefined || ""))
-    ) {
+    } else if (from.currency ==="" || to.currency === "") {
       setAlertCurrFlag(true);
     }
   };
@@ -156,13 +160,16 @@ const InputField = ({
       ) : (
         <></>
       )}
+
       <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-        <InputLabel htmlFor="standard-amount" className="amount-label">
+        <InputLabel htmlFor="standard-amount" className="amount-label" data-testid="amount-label">
           Amount
         </InputLabel>
         <Input
           id="standard-amount"
+          name="standard-amount"
           type="string"
+          data-testid="amount-input"
           aria-describedby="my-helper-text"
           inputProps={{ inputMode: "numeric", "aria-label": "Amount" }}
           value={amountInput}
@@ -171,6 +178,8 @@ const InputField = ({
           endAdornment={
             <InputAdornment position="end">
               <SyncAltIcon
+                data-testid="switch-currencies"
+                name="switch-currency"
                 style={{ color: "#005698", cursor: "pointer" }}
                 onClick={switchCurrency}
               />
@@ -178,8 +187,9 @@ const InputField = ({
           }
         />
         {hasError[0].error && (
-          <span id="my-helper-text">{hasError[0].errorMsg}</span>
+          <span id="my-helper-text" data-testid="has-error">{hasError[0].errorMsg}</span>
         )}
+
         <CountriesDropdown
           val={from}
           from={from}
@@ -193,7 +203,7 @@ const InputField = ({
           <>
             <Row fluid="true">
               <Col xs={2}></Col>
-              <Col xs={10} className="output-class">
+              <Col xs={10} className="output-class" aria-label="converted amount">
                 {amountInput} {selectedFromCurr} is equivalent to {convertedAmt}{" "}
                 {selectedToCurr}
               </Col>
@@ -207,7 +217,7 @@ const InputField = ({
         ) : (
           <></>
         )}
-        <Button className="convert-button" onClick={convertCurrency}>
+        <Button data-testid="convert-buttton" aria-label="convert button" name="Convert" className="convert-button" onClick={convertCurrency}>
           Convert
         </Button>
       </FormControl>

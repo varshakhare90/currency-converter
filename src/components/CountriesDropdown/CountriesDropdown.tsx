@@ -8,20 +8,19 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { countryCode } from "../../utilities/countryCode";
-import { ClassNames } from "@emotion/react";
 
 interface DropDownProps {
   val: CountryObject | null;
-  from: CountryObject | null;
-  to: CountryObject | null;
+  from: CountryObject;
+  to: CountryObject;
   switchFlip: boolean;
-  setFrom: React.Dispatch<React.SetStateAction<CountryObject | null>>;
-  setTo: React.Dispatch<React.SetStateAction<CountryObject | null>>;
+  setFrom: React.Dispatch<React.SetStateAction<CountryObject>>;
+  setTo: React.Dispatch<React.SetStateAction<CountryObject>>;
   handleChange: (e: any) => void;
 };
 
 
-const Dropdown: React.FC<DropDownProps> = ({
+const CountriesDropdown: React.FC<DropDownProps> = ({
   val,
   from,
   to,
@@ -39,7 +38,7 @@ const Dropdown: React.FC<DropDownProps> = ({
 
   const countriesCallFunc = () => {
     let countriesObj: objFromApi = {};
-    return fetch("https://openexchangerates.org/api/currencies.json")
+     fetch("https://openexchangerates.org/api/currencies.json")
       .then((res) => res.json())
       .then((data) => {
         countriesObj = data;
@@ -49,7 +48,7 @@ const Dropdown: React.FC<DropDownProps> = ({
 
   const countryFlagFunc = (countriesObj: objFromApi) => {
     let countriesFlagObj = {};
-    return fetch("https://flagcdn.com/en/codes.json")
+     fetch("https://flagcdn.com/en/codes.json")
       .then((res) => res.json())
       .then((data) => {
         countriesFlagObj = data;
@@ -126,9 +125,10 @@ const Dropdown: React.FC<DropDownProps> = ({
   return (
     
     <div className="countriesDropdown">
-      <div className="from-currency">
+      <div className="from-currency" data-testid="from-currency-input">
       <Autocomplete
         selectOnFocus={true}
+        aria-label="From Currency"
         popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
         noOptionsText="No Records Found"
         getOptionLabel={(option: CountryObject) =>
@@ -149,6 +149,7 @@ const Dropdown: React.FC<DropDownProps> = ({
         renderOption={(props, option) => (
           <Box
             component="li"
+            role="option"
             sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
             {...props}
             key={option.index}
@@ -165,6 +166,7 @@ const Dropdown: React.FC<DropDownProps> = ({
             : `${option?.currency}/${option?.country}`}
           </Box>
         )}
+        data-testid="from-currency-input"
         id="from-currency"
         renderInput={(params) => (
           <TextField
@@ -203,6 +205,7 @@ const Dropdown: React.FC<DropDownProps> = ({
 
       <Autocomplete
         selectOnFocus={true}
+        aria-label="To Currency"
         popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
         noOptionsText="No Records Found"
         getOptionLabel={(option: CountryObject) => 
@@ -223,6 +226,7 @@ const Dropdown: React.FC<DropDownProps> = ({
         renderOption={(props, option) => (
           <Box
             component="li"
+            role="option"
             {...props}
             key={option.index}
           >
@@ -239,6 +243,7 @@ const Dropdown: React.FC<DropDownProps> = ({
           </Box>
         )}
         id="to-currency"
+        data-testid="to-currency-input"
         renderInput={(params) => (
           <TextField
             {...params}
@@ -252,7 +257,6 @@ const Dropdown: React.FC<DropDownProps> = ({
             InputProps={{
               ...params.InputProps,
               type: "search",
-
               startAdornment:
                 params.inputProps.value &&
                 (to?.countryFlag ? (
@@ -275,4 +279,4 @@ const Dropdown: React.FC<DropDownProps> = ({
   );
 };
 
-export default Dropdown;
+export default CountriesDropdown;

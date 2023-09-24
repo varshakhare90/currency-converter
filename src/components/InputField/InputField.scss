@@ -22,9 +22,8 @@ $backgroundColor: #005698;
             }
             #my-helper-text{
                 color:$errorColor;
-                font-weight: 400;
+                font-weight: 700;
                 font-size: 0.75rem;
-                font-style: italic;
             }
             & label.Mui-focused{
                 color: rgba(0, 0, 0, 0.6);
