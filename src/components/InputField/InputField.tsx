@@ -12,20 +12,20 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import CountdownTimer from "../CountdownTimer/CountdownTimer";
-import Alert from "@mui/material/Alert";
+import Alert from "@mui/material/Alert";  // importing all the modeules
 
-interface InputProps {
+interface InputProps {   // interface for the props
   amountInput: string;
   setAmountInput: React.Dispatch<React.SetStateAction<string>>;
   handleAmountInput: (e: React.FormEvent) => void;
-}
+};
 
-const initialErrorVal = {
+const initialErrorVal = {   // Initialising of the values
   error: false,
   errorMsg: "",
 };
 
-const dropdownInitialValue = {
+const dropdownInitialValue = {  
   country: "",
   currency: "",
   countryFlag:"",
@@ -44,11 +44,11 @@ const InputField = ({
   const [selectedFromCurr, setSelectedFromCurr] = useState<string>("");
   const [alertCurrFlag, setAlertCurrFlag] = useState<boolean>(false);
   const [selectedToCurr, setSelectedToCurr] = useState<string>("");
-  const [convertedAmt, setConvertedAmt] = useState<number>(0);
+  const [convertedAmt, setConvertedAmt] = useState<number>(0);  // initialise converted amount
   const [timeLeft, setTimeLeft] = useState<number>(600); // Set the initial time in seconds
   const [switchFlip, setSwitchFlip] = useState<boolean>(false);
 
-  const inputChange = (
+  const inputChange = (    // calling the function when input changes
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setAmountInput(e.target.value);
@@ -63,7 +63,7 @@ const InputField = ({
     resetValues();
   };
 
-  const resetValues = () =>{
+  const resetValues = () =>{   // resetting the values
     setConvertedAmt(0);
     setTimeLeft(600);
     setAlertCurrFlag(false);
@@ -71,30 +71,19 @@ const InputField = ({
     setSelectedToCurr("");
   };
 
-  const switchCurrency = () => {
-    console.log("switching", from, to);
+  const switchCurrency = () => {   // flipping the currency flag function
     setSwitchFlip(!switchFlip);
-  
   };
 
-  const rateApiCall = () => {
+  const rateApiCall = () => {     // rate call api
     fetch("https://api.exchangerate-api.com/v4/latest/GBP")
       .then((res) => res.json())
       .then((data) => {
-        console.log("rates", data);
         setRateData(data.rates);
       });
   };
 
-  const convertCurrency = () => {
-    console.log(
-      "from covert currency",
-      from,
-      to,
-      selectedFromCurr,
-      selectedToCurr,
-      rateData
-    );
+  const convertCurrency = () => {   // function call to convert currency
 
     setConvertedAmt(0);
     setTimeLeft(600);
@@ -110,11 +99,6 @@ const InputField = ({
           setSelectedToCurr(to[key]);
           let exchangedAmt = parseInt(amountInput) * rateData[to[key]]
           setConvertedAmt(exchangedAmt);
-          console.log(
-            to[key],
-            rateData[to[key]],
-            parseFloat(amountInput) * rateData[to[key]]
-          );
         }
       }
       for (const key in from) {

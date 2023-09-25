@@ -7,16 +7,16 @@ import { CountryObject, objFromApi } from "../../utilities/model";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { countryCode } from "../../utilities/countryCode";
+import { countryCode } from "../../utilities/countryCode"; // importing of the modules
 
-interface DropDownProps {
+interface DropDownProps {    // dropdown props
   val: CountryObject | null;
   from: CountryObject;
   to: CountryObject;
   switchFlip: boolean;
   setFrom: React.Dispatch<React.SetStateAction<CountryObject>>;
   setTo: React.Dispatch<React.SetStateAction<CountryObject>>;
-  handleChange: (e: any) => void;
+  handleChange: (e: React.FormEvent) => void;
 };
 
 
@@ -33,8 +33,9 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
 
 
   useEffect(() => {
-    countriesCallFunc();
-  }, []);
+    countriesCallFunc();  // calling the api's
+    console.log('i fire once');
+  },[]);
 
   const countriesCallFunc = () => {
     let countriesObj: objFromApi = {};
@@ -56,7 +57,7 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
       });
   };
 
-  const finalDropDownResult = (
+  const finalDropDownResult = (  // making the final array through this function
     countriesObj: objFromApi,
     countriesFlagObj: objFromApi
   ) => {
@@ -83,7 +84,6 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
   };
 
   useEffect(() => {
-    console.log("switchFlip", from, to);
     let fromTemp = from;
     setFrom(to);
     setTo(fromTemp);
@@ -91,26 +91,20 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
 
   
 
-  const handleToCurrency = (event: any, newValue: any, reason: any) => {
-    if (reason === "clear") {
-      // setSelectedOption(newValue);
-      setTo(newValue);
-    } else {
-      //    setSelectedOption(newValue);
+  const handleToCurrency = (event: React.FormEvent, newValue: any) => { 
+    setTo(newValue);
+    handleChange(event);
+  };
 
-      setTo(newValue);
-    }
+// calling the function's on change of dropdowns
+
+  const handleFromCurrency = (event: React.FormEvent, newValue: any) => {
+    setFrom(newValue);
     handleChange(event);
   };
-  const handleFromCurrency = (event: any, newValue: any, reason: any) => {
-    if (reason === "clear") {
-      setTo(newValue);
-    } else {
-      setFrom(newValue);
-    }
-    handleChange(event);
-  };
-  const InputLabelWithIcon: React.FC<{
+
+
+  const InputLabelWithIcon: React.FC<{   // icon component
     labelText: string;
     icon: React.ReactNode;
   }> = ({ labelText, icon }) => (
@@ -127,7 +121,6 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
     <div className="countriesDropdown">
       <div className="from-currency" data-testid="from-currency-input">
       <Autocomplete
-        selectOnFocus={true}
         aria-label="From Currency"
         popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
         noOptionsText="No Records Found"
@@ -137,14 +130,13 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
             : `${option?.currency}/${option?.country}`
         }
         options={countries}
-        autoSelect={true}
         isOptionEqualToValue={(option: CountryObject, value: any) =>
           option.countryFlag === value.countryFlag &&
           option.currency === value.currency
         }
         value={from}
-        onChange={(event, newValue, reason) => {
-          handleFromCurrency(event, newValue, reason);
+        onChange={(event, newValue) => {
+          handleFromCurrency(event, newValue);
         }}
         renderOption={(props, option) => (
           <Box
@@ -206,7 +198,6 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
       <div className="to-currency">
 
       <Autocomplete
-        selectOnFocus={true}
         aria-label="To Currency"
         popupIcon={<KeyboardArrowDownIcon style={{ color: "#005698" }} />}
         noOptionsText="No Records Found"
@@ -216,14 +207,13 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
             : `${option?.currency}/${option?.country}`
         }
         options={countries}
-        autoSelect={true}
         isOptionEqualToValue={(option: CountryObject, value: any) =>
           option.countryFlag === value.countryFlag &&
           option.currency === value.currency
         }
         value={to}
-        onChange={(event, newValue, reason) => {
-          handleToCurrency(event, newValue, reason);
+        onChange={(event, newValue) => {
+          handleToCurrency(event, newValue);
         }}
         renderOption={(props, option) => (
           <Box

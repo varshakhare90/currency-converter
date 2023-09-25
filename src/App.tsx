@@ -4,12 +4,12 @@ import InputField from "./components/InputField/InputField";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import  CardHeader  from '@mui/material/CardHeader';
+import  CardHeader  from '@mui/material/CardHeader'; // importing the modules
 
 
 const App: React.FC = () =>{
 
-  const [amountInput, setAmountInput] = useState<string>('');
+  const [amountInput, setAmountInput] = useState<string>(''); // amount input field initialization
 
   const handleAmountInput = (e: React.FormEvent) =>{
     e.preventDefault();

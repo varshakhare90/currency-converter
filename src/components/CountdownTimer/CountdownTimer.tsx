@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Box } from "@mui/system";
+import { Box } from "@mui/system"; // importing of modules
 
 
-interface timeInterface{
+interface timeInterface{  // interface of the props
     minutes : number;
     seconds: number;
 };
