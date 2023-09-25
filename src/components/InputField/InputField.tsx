@@ -137,7 +137,7 @@ const InputField = ({
     <Container className="amount-input-field">
       {alertCurrFlag ? (
         <>
-          <Alert severity="error">
+          <Alert severity="error" tabIndex={-1} aria-label="currency error">
             Please select the currency to exchange.
           </Alert>
         </>
@@ -153,6 +153,7 @@ const InputField = ({
           id="standard-amount"
           name="standard-amount"
           type="string"
+          tabIndex={0}
           data-testid="amount-input"
           aria-describedby="my-helper-text"
           inputProps={{ inputMode: "numeric", "aria-label": "Amount" }}
@@ -171,7 +172,7 @@ const InputField = ({
           }
         />
         {hasError[0].error && (
-          <span id="my-helper-text" data-testid="has-error">{hasError[0].errorMsg}</span>
+          <span id="my-helper-text" aria-label="error" tabIndex={-1} data-testid="has-error">{hasError[0].errorMsg}</span>
         )}
 
         <CountriesDropdown
@@ -187,7 +188,7 @@ const InputField = ({
           <>
             <Row fluid="true">
               <Col xs={2}></Col>
-              <Col xs={10} className="output-class" aria-label="converted amount">
+              <Col xs={10} className="output-class" tabIndex={0} aria-label="converted amount">
                 {amountInput} {selectedFromCurr} is equivalent to {convertedAmt}{" "}
                 {selectedToCurr}
               </Col>
@@ -201,7 +202,7 @@ const InputField = ({
         ) : (
           <></>
         )}
-        <Button data-testid="convert-buttton" aria-label="convert button" name="Convert" className="convert-button" onClick={convertCurrency}>
+        <Button data-testid="convert-buttton" tabIndex={0} aria-label="convert button" name="Convert" className="convert-button" onClick={convertCurrency}>
           Convert
         </Button>
       </FormControl>
