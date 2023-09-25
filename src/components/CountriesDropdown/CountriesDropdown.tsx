@@ -167,6 +167,7 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
           </Box>
         )}
         data-testid="from-currency-input"
+        disableClearable={true}
         id="from-currency"
         renderInput={(params) => (
           <TextField
@@ -178,6 +179,7 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
               />
             }
             variant="standard"
+            
             InputProps={{
               ...params.InputProps,
               type: "search",
@@ -243,6 +245,7 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
           </Box>
         )}
         id="to-currency"
+        disableClearable={true}
         data-testid="to-currency-input"
         renderInput={(params) => (
           <TextField

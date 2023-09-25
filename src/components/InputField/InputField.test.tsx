@@ -78,28 +78,28 @@ describe("InputField", () => {
 
   });
 
-//   it("should show error when amountInput is empty", () => {
+  it("should show error when amountInput is empty", () => {
    
-//     const convertCurrency = jest.fn();
+    const convertCurrency = jest.fn();
 
-//     render(
-//       <InputField
-//         amountInput=""
-//         setAmountInput={jest.fn()}
-//         handleAmountInput={jest.fn()}
-//       />
-//     );
-//     convertCurrency();
-//     const error = screen.getByTestId("has-error");
-//     const convertBtn = screen.getByTestId("convert-buttton");
-//     expect(convertBtn).toBeInTheDocument();
+    render(
+      <InputField
+        amountInput=""
+        setAmountInput={jest.fn()}
+        handleAmountInput={jest.fn()}
+      />
+    );
+    convertCurrency();
+    const error = screen.getByTestId("has-error");
+    const convertBtn = screen.getByTestId("convert-buttton");
+    expect(convertBtn).toBeInTheDocument();
     
-//     expect(convertCurrency).toHaveBeenCalledTimes(1);
-//     expect(error).toBe([
-//       { error: true, errorMsg: "Please enter a number." },
-//     ]);
+    expect(convertCurrency).toHaveBeenCalledTimes(1);
+    expect(error).toBe([
+      { error: true, errorMsg: "Please enter a number." },
+    ]);
     
-//   });
+  });
 
   it("should update 'from' and 'to' values on switchFlip change", () => {
     const from = {
