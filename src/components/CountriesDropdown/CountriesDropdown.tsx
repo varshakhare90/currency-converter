@@ -34,7 +34,6 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
 
   useEffect(() => {
     countriesCallFunc();  // calling the api's
-    console.log('i fire once');
   },[]);
 
   const countriesCallFunc = () => {
