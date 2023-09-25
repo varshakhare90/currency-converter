@@ -3,11 +3,11 @@ import "./CountriesDropdown.scss";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { CountryObject, objFromApi } from "../../utilities/model";
+import { CountryObject } from "../../utilities/model";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { countryCode } from "../../utilities/countryCode"; // importing of the modules
+import { countriesCallFunc } from "../../api/api";// importing of the modules
 
 interface DropDownProps {    // dropdown props
   val: CountryObject | null;
@@ -32,55 +32,10 @@ const CountriesDropdown: React.FC<DropDownProps> = ({
   const [countries, setCountries] = useState<CountryObject[]>([]);
 
 
-  useEffect(() => {
-    countriesCallFunc();  // calling the api's
+  useEffect(() => { // calling the api's
+    countriesCallFunc(setCountries)
   },[]);
 
-  const countriesCallFunc = () => {
-    let countriesObj: objFromApi = {};
-     fetch("https://openexchangerates.org/api/currencies.json")
-      .then((res) => res.json())
-      .then((data) => {
-        countriesObj = data;
-        countryFlagFunc(countriesObj);
-      });
-  };
-
-  const countryFlagFunc = (countriesObj: objFromApi) => {
-    let countriesFlagObj = {};
-     fetch("https://flagcdn.com/en/codes.json")
-      .then((res) => res.json())
-      .then((data) => {
-        countriesFlagObj = data;
-        finalDropDownResult(countriesObj, countriesFlagObj);
-      });
-  };
-
-  const finalDropDownResult = (  // making the final array through this function
-    countriesObj: objFromApi,
-    countriesFlagObj: objFromApi
-  ) => {
-    const mergedArray: CountryObject[] = [];
-    let index: number = 0;
-    for (const key3 in countryCode) {
-      for (const key1 in countriesObj) {
-        if (key1 === key3) {
-          for (const key2 in countriesFlagObj) {
-            if (countryCode[key1].toLowerCase() === key2) {
-              mergedArray.push({
-                currency: key1,
-                country: countriesObj[key1],
-                countryFlag: countryCode[key1].toLowerCase(),
-                index: index,
-              });
-              index++;
-            }
-          }
-        }
-      }
-    }
-    setCountries(mergedArray);
-  };
 
   useEffect(() => {
     let fromTemp = from;
